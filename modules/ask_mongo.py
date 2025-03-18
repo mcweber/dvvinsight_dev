@@ -280,6 +280,17 @@ def vector_search(query_string: str = "*", gen_suchworte: bool = False, score: f
 
 
 # Diff ------------------------------------------------
+def collect_ausgaben(quelle: str = "", jahrgang: str = "", ausgabe: str = "", datum: str = "") -> list:
+    cursor = collection.find(
+        {'$and': [
+            {'quelle_id': quelle},
+            {'jahrgang': jahrgang},
+            {'nummer': ausgabe}
+            ]
+        }
+    )
+    return list(cursor)
+
 def group_by_field() -> dict:
     pipeline = [
             {   

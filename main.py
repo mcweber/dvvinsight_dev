@@ -2,9 +2,9 @@ import streamlit as st
 import modules.user_management as user_management
 
 if "role" not in st.session_state:
-    st.session_state.role = ""
-    st.session_state.user_name = ""
-    st.session_state.user_status: bool = False
+    st.session_state.role = "admin"
+    st.session_state.user_name = "martin"
+    st.session_state.user_status: bool = True
 
 ROLES = [None, "user", "admin"]
 
@@ -34,11 +34,11 @@ def logout():
 
 # Define pages --------------------------------------------------------------
 page_logout = st.Page(logout, title="Log out", icon=":material/logout:")
-
 page_settings = st.Page("pages/settings.py", icon=":material/security:", title="Settings")
+page_statistiken = st.Page("pages/statistiken_page.py", title="Statistiken", icon=":material/insert_chart:")
 
 page_chat = st.Page(
-    "pages/chat_page.py",
+    "pages/research_page.py",
     title="Research",
     icon=":material/search:",
     default=False,
@@ -65,7 +65,7 @@ page_newsletter = st.Page(
 page_dict = {}
 if st.session_state.role in ["admin", "user"]:
     page_dict["Module"] = [page_chat, page_ausgaben, page_newsletter]
-    page_dict["Admin"] = [page_settings, page_logout]
+    page_dict["Admin"] = [page_settings, page_statistiken, page_logout]
 
 if len(page_dict) > 0:
     pg = st.navigation(page_dict)

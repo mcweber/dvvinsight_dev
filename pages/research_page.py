@@ -32,21 +32,6 @@ def init_llm(llm: str = "gemini", local: bool = False):
 def init_websearch():
     return ask_web.WebSearch()
 
-@st.dialog("Statistiken")
-def statistiken_dialog() -> None:
-    num_documents = ask_mongo.collection.count_documents({})
-    num_abstracts = ask_mongo.collection.count_documents({'ki_abstract': {'$ne': ''}})
-    num_embeddings = ask_mongo.collection.count_documents({'embeddings': {'$ne': []}})
-    num_schlagworte = ask_mongo.collection.count_documents({'schlagworte': {'$ne': []}})
-    st.write(f"Anzahl Artikel: {num_documents:,}".replace(",", "."))
-    st.write(f"mit Abstracts: {num_abstracts:,}".replace(",", "."))
-    st.write(f"ohne Embeddings: {num_documents - num_embeddings:,}".replace(",", "."))
-    st.write(f"ohne Schlagworte: {num_documents - num_schlagworte:,}".replace(",", "."))
-    st.divider()
-    st.write("Anzahl Artikel pro Marktbereich:")
-    for item in MARKTBEREICHE_LISTE:
-        st.write(f"{item}: {ask_mongo.collection.count_documents({'quelle_id': {'$in': item}}):,}".replace(",", "."))
-
 @st.dialog("DokumentenAnsicht")
 def document_view(result: list = "Kein Text übergeben.") -> None:
     st.title(result['titel'])
@@ -122,45 +107,42 @@ def main() -> None:
         st.session_state.system_prompt: str = ask_mongo.get_system_prompt()
 
     # Define Sidebar ---------------------------------------------------
-    if st.session_state.role == "admin":
-        with st.sidebar:
-            if st.button("Statistiken"):
-                statistiken_dialog()
-            switch_search_results = st.number_input(label="Search Results", min_value=1, value=st.session_state.search_results_limit, step=10)
-            if switch_search_results != st.session_state.search_results_limit:
-                st.session_state.search_results_limit = switch_search_results
-                # st.rerun()
-            st.divider()
-            st.subheader("Einstellungen RAG Modus")
-            switch_rag_db_suche = st.checkbox("DB-Suche", value=st.session_state.rag_db_suche)
-            if switch_rag_db_suche != st.session_state.rag_db_suche:
-                st.session_state.rag_db_suche = switch_rag_db_suche
-                st.rerun()
-            switch_rag_web_suche = st.checkbox("WEB-Suche", value=st.session_state.rag_web_suche)
-            if switch_rag_web_suche != st.session_state.rag_web_suche:
-                st.session_state.rag_web_suche = switch_rag_web_suche
-                st.rerun()
-            switch_rag_index = st.radio(label="Switch RAG-index", options=("fulltext", "vektor"), index=0)
-            if switch_rag_index != st.session_state.rag_index:
-                st.session_state.rag_index = switch_rag_index
-                st.rerun()
-            st.divider()
-            switch_system_prompt = st.text_area("System-Prompt", st.session_state.system_prompt, height=500)
-            if switch_system_prompt != st.session_state.system_prompt:
-                st.session_state.system_prompt = switch_system_prompt
-                ask_mongo.update_system_prompt(switch_system_prompt)
-                st.rerun()
-            st.divider()
-            switch_search_filter = st.multiselect(label="Choose Publications", options=st.session_state.feld_liste, default=st.session_state.search_filter)
-            if switch_search_filter != st.session_state.search_filter:
-                st.session_state.search_filter = switch_search_filter
-                st.rerun()
-            if st.button("Reset Filter"):
-                st.session_state.search_filter = st.session_state.feld_liste
-                st.session_state.marktbereich = "Alle"
-                st.session_state.marktbereich_index = 0
-                st.rerun()
-            
+    with st.sidebar:
+        switch_search_results = st.number_input(label="Search Results", min_value=1, value=st.session_state.search_results_limit, step=10)
+        if switch_search_results != st.session_state.search_results_limit:
+            st.session_state.search_results_limit = switch_search_results
+            # st.rerun()
+        st.divider()
+        st.subheader("Einstellungen RAG Modus")
+        switch_rag_db_suche = st.checkbox("DB-Suche", value=st.session_state.rag_db_suche)
+        if switch_rag_db_suche != st.session_state.rag_db_suche:
+            st.session_state.rag_db_suche = switch_rag_db_suche
+            st.rerun()
+        switch_rag_web_suche = st.checkbox("WEB-Suche", value=st.session_state.rag_web_suche)
+        if switch_rag_web_suche != st.session_state.rag_web_suche:
+            st.session_state.rag_web_suche = switch_rag_web_suche
+            st.rerun()
+        switch_rag_index = st.radio(label="Switch RAG-index", options=("fulltext", "vektor"), index=0)
+        if switch_rag_index != st.session_state.rag_index:
+            st.session_state.rag_index = switch_rag_index
+            st.rerun()
+        st.divider()
+        switch_system_prompt = st.text_area("System-Prompt", st.session_state.system_prompt, height=500)
+        if switch_system_prompt != st.session_state.system_prompt:
+            st.session_state.system_prompt = switch_system_prompt
+            ask_mongo.update_system_prompt(switch_system_prompt)
+            st.rerun()
+        st.divider()
+        switch_search_filter = st.multiselect(label="Choose Publications", options=st.session_state.feld_liste, default=st.session_state.search_filter)
+        if switch_search_filter != st.session_state.search_filter:
+            st.session_state.search_filter = switch_search_filter
+            st.rerun()
+        if st.button("Reset Filter"):
+            st.session_state.search_filter = st.session_state.feld_liste
+            st.session_state.marktbereich = "Alle"
+            st.session_state.marktbereich_index = 0
+            st.rerun()
+        
     # Define Search Type & Search Filter ------------------------------------------------
     col = st.columns(2)
 
