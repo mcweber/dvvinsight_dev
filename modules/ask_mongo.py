@@ -279,8 +279,9 @@ def vector_search(query_string: str = "*", gen_suchworte: bool = False, score: f
     return collection.aggregate(pipeline), suchworte
 
 
-# Diff ------------------------------------------------
-def collect_ausgaben(quelle: str = "", jahrgang: str = "", ausgabe: str = "", datum: str = "") -> list:
+# Div ------------------------------------------------
+
+def collect_ausgaben(quelle: str = "", jahrgang: int = 0, ausgabe: int = 0, datum: str = "") -> list:
     cursor = collection.find(
         {'$and': [
             {'quelle_id': quelle},
@@ -290,6 +291,7 @@ def collect_ausgaben(quelle: str = "", jahrgang: str = "", ausgabe: str = "", da
         }
     )
     return list(cursor)
+
 
 def group_by_field() -> dict:
     pipeline = [

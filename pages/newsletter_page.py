@@ -1,4 +1,5 @@
 import streamlit as st
+import datetime
 
 import modules.ask_mongo as ask_mongo
 
@@ -15,13 +16,13 @@ st.title("DVV Insight - Newsletter")
 with st.form(key="ausgabe"):
     col = st.columns(3)
     with col[0]: quelle = st.text_input("Quelle")
-    with col[1]: jahrgang = st.text_input("Jahrgang")
-    with col[2]: ausgabe = st.text_input("Ausgabe")
+    with col[1]: jahrgang = st.number_input(label="Jahrgang", format="%d", value=datetime.datetime.now().year)
+    with col[2]: ausgabe = st.number_input(label="Ausgabe", format="%d", min_value=1)
     # question = st.text_input("Suchbegriff", key="question")
     if st.form_submit_button("Ausführen"):
         st.session_state.search_status = True
 
-results = ask_mongo.collect_ausgaben(quelle=quelle, jahrgang=str(jahrgang), ausgabe=str(ausgabe))
+results = ask_mongo.collect_ausgaben(quelle=quelle, jahrgang=jahrgang, ausgabe=ausgabe)
 
 for result in results:
     st.write(f"[{result["seite_start"]} - {result["seite_ende"]}] {result["titel"]}")
