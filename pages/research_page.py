@@ -1,5 +1,5 @@
 # ---------------------------------------------------
-VERSION = "17.03.2025"
+VERSION = "18.03.2025"
 # Author: M. Weber
 # ---------------------------------------------------
 # ---------------------------------------------------
@@ -23,7 +23,10 @@ VECTOR_SEARCH_SCORE = 0.8
 TEXT_SEARCH_SCORE = 9.0
 LLM = "gpt-4o"
 
-# Functions -------------------------------------------------------------
+# ---------------------------------------------------
+# Functions
+# ---------------------------------------------------
+
 @st.cache_resource
 def init_llm(llm: str = "gemini", local: bool = False):
     return ask_llm.LLMHandler(llm=llm, local=local)
@@ -76,7 +79,10 @@ def show_latest_articles(max_items: int = 10) -> None:
         )
     print_results(results)
 
-# Main -----------------------------------------------------------------
+# ---------------------------------------------------
+# Main
+# ---------------------------------------------------
+
 def main() -> None:
     # st.set_page_config(page_title='DVV Insight', initial_sidebar_state="collapsed", layout="wide")
     st.title("DVV Insight - Chat")
