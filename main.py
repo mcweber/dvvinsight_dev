@@ -33,27 +33,28 @@ def logout():
     st.rerun()
 
 # Define pages --------------------------------------------------------------
-page_logout = st.Page(logout, title="Log out")
+page_logout = st.Page(logout, title="Log out", icon=":material/logout:")
 
-page_settings = st.Page("pages/settings.py", title="Settings")
+page_settings = st.Page("pages/settings.py", icon=":material/security:", title="Settings")
 
 page_chat = st.Page(
     "pages/chat_page.py",
-    title="Chat",
-    # icon=":material/help:",
+    title="Research",
+    icon=":material/search:",
     default=False,
 )
 
 page_ausgaben = st.Page(
     "pages/ausgaben_page.py",
     title="Ausgaben",
+    icon=":material/content_copy:",
     default=False,
 )
 
 page_newsletter = st.Page(
     "pages/newsletter_page.py",
     title="Newsletter",
-    # icon=":material/healing:",
+    icon=":material/description:",
     default=False,
 )
 
