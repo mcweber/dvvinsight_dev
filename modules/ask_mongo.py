@@ -281,15 +281,15 @@ def vector_search(query_string: str = "*", gen_suchworte: bool = False, score: f
 
 # Div ------------------------------------------------
 
-def collect_ausgaben(quelle: str = "", jahrgang: int = 0, ausgabe: int = 0, datum: str = "") -> list:
+def collect_ausgaben(quelle:str, jahrgang:int, ausgabe:int) -> list:
     cursor = collection.find(
         {'$and': [
-            {'quelle_id': quelle.upper()},
+            {'quelle_id': quelle},
             {'jahrgang': jahrgang},
             {'nummer': ausgabe}
             ]
         }
-    ).sort('seite_start', 1)
+        ).sort('seite_start', 1)
     return list(cursor)
 
 
