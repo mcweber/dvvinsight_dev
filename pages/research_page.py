@@ -1,5 +1,5 @@
 # ---------------------------------------------------
-VERSION = "18.03.2025"
+# Version: 19.03.2025
 # Author: M. Weber
 # ---------------------------------------------------
 # ---------------------------------------------------
@@ -12,13 +12,15 @@ import modules.ask_mongo as ask_mongo
 import modules.user_management as user_management
 
 SEARCH_TYPES = ("rag", "vektor", "volltext", "web")
-PUB_LOG = ("THB", "DVZ", "DVZT", "THBT", "DVZMG", "DVZM", "DVZ-Brief")
-PUB_MAR = ("THB", "THBT", "SHF", "SHIOF", "SPI", "NSH")
-PUB_RAIL = ("EI", "SD", "BM", "BAMA")
-PUB_OEPNV = ("RABUS", "NAHV", "NANA", "DNV")
-PUB_PI = ("pi_AuD", "pi_PuA", "pi_EuE", "pi_E20", "pi_Industry_Forward", "pi_Industrial_Solutions", "pi_Next_Technology", "pi_")
-MARKTBEREICHE = {"Alle": (), "Logistik": PUB_LOG, "Maritim": PUB_MAR, "Rail": PUB_RAIL, "ÖPNV": PUB_OEPNV, "Industrie": PUB_PI}
-MARKTBEREICHE_LISTE = list(MARKTBEREICHE.keys())
+PUBS = {
+    "Alle": (),
+    "Logistik": ("THB", "DVZ", "DVZT", "THBT", "DVZMG", "DVZM", "DVZ-Brief"),
+    "Maritim": ("THB", "THBT", "SHF", "SHIOF", "SPI", "NSH"),
+    "Rail": ("EI", "SD", "BM", "BAMA"),
+    "OEPNV": ("RABUS", "NAHV", "NANA", "DNV"),
+    "Industrie": ("pi_AuD", "pi_PuA", "pi_EuE", "pi_E20", "pi_Industry_Forward", "pi_Industrial_Solutions", "pi_Next_Technology", "pi_")
+}
+MARKTBEREICHE = list(PUBS.keys())
 VECTOR_SEARCH_SCORE = 0.8
 TEXT_SEARCH_SCORE = 9.0
 LLM = "gpt-4o"
@@ -28,7 +30,7 @@ LLM = "gpt-4o"
 # ---------------------------------------------------
 
 @st.cache_resource
-def init_llm(llm: str = "gemini", local: bool = False):
+def init_llm(llm: str = "gpt-4o", local: bool = False):
     return ask_llm.LLMHandler(llm=llm, local=local)
 
 @st.cache_resource
@@ -84,7 +86,6 @@ def show_latest_articles(max_items: int = 10) -> None:
 # ---------------------------------------------------
 
 def main() -> None:
-    # st.set_page_config(page_title='DVV Insight', initial_sidebar_state="collapsed", layout="wide")
     st.title("DVV Insight - Chat")
 
     # Init LLM & Web-search----------------------------------
@@ -95,8 +96,6 @@ def main() -> None:
     if 'init' not in st.session_state:
         st.session_state.init = True
         st.session_state.feld_liste: list = list(ask_mongo.group_by_field().keys())
-        # st.session_state.history: list = []
-        # st.session_state.llmStatus: str = LLM
         st.session_state.marktbereich: str = "Alle"
         st.session_state.marktbereich_index: int = 0
         st.session_state.rag_db_suche: bool = True
@@ -160,11 +159,11 @@ def main() -> None:
             st.rerun()
 
     with col[1]:
-        switch = st.selectbox(label="Marktbereich", options=list(MARKTBEREICHE.keys()), index=st.session_state.marktbereich_index)
+        switch = st.selectbox(label="Marktbereich", options=MARKTBEREICHE, index=st.session_state.marktbereich_index)
         if switch != st.session_state.marktbereich:
-            st.session_state.search_filter = MARKTBEREICHE[switch]
+            st.session_state.search_filter = PUBS[switch]
             st.session_state.marktbereich = switch
-            st.session_state.marktbereich_index = list(MARKTBEREICHE).index(switch)
+            st.session_state.marktbereich_index = MARKTBEREICHE.index(switch)
             st.rerun()
 
     # Define Search Form ----------------------------------------------

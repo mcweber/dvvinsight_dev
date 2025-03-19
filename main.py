@@ -6,9 +6,6 @@ if "role" not in st.session_state:
     st.session_state.user_name = "martin"
     st.session_state.user_status: bool = True
 
-ROLES = [None, "user", "admin"]
-
-
 # Define functions -----------------------------------------------------------
 def login():
     with st.form(key="loginForm"):
@@ -59,6 +56,7 @@ page_newsletter = st.Page(
 )
 
 # Define Main ---------------------------------------------------------------
+st.set_page_config(page_title='', initial_sidebar_state="expanded", layout="wide")
 # st.title("Chat DVV")
 # st.logo("images/horizontal_blue.png", icon_image="images/icon_blue.png")
 
