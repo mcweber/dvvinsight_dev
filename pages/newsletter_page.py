@@ -66,6 +66,6 @@ if st.session_state.search_status:
         with st.expander(label="Texte EN"):
             st.warning(ausgabe_text_en)
     else:
-        st.write("Keine Ergebnisse gefunden.")
+        st.warning("Keine Ergebnisse gefunden.")
 
     st.session_state.search_status = False
