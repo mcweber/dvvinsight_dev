@@ -2,9 +2,9 @@ import streamlit as st
 import modules.user_management as user_management
 
 if "role" not in st.session_state:
-    st.session_state.role = "admin"
-    st.session_state.user_name = "martin"
-    st.session_state.user_status: bool = True
+    st.session_state.role = None 
+    st.session_state.user_name = None
+    st.session_state.user_status: bool = False
 
 # Define functions -----------------------------------------------------------
 def login():
@@ -56,7 +56,7 @@ page_newsletter = st.Page(
 )
 
 # Define Main ---------------------------------------------------------------
-st.set_page_config(page_title='', initial_sidebar_state="expanded", layout="wide")
+st.set_page_config(page_title='', initial_sidebar_state="collapsed", layout="wide")
 # st.title("Chat DVV")
 # st.logo("images/horizontal_blue.png", icon_image="images/icon_blue.png")
 
