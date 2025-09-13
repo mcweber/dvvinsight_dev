@@ -1,15 +1,15 @@
 import streamlit as st
 import modules.user_management_sql as user_management
 
-if "role" not in st.session_state:
-    st.session_state.role = None 
-    st.session_state.user_name = None
-    st.session_state.user_status: bool = False
+if "rolle" not in st.session_state:
+    st.session_state.rolle = "admin" 
+    st.session_state.user_name = "mw"
+    st.session_state.user_status: bool = True
 
 # Define functions -----------------------------------------------------------
 def login():
     with st.form(key="loginForm", width=350):
-        st.write(f"Status: {st.session_state.role}")
+        st.write(f"Status: {st.session_state.rolle}")
         user_name = st.text_input(label="Benutzer", width=300)
         user_pw = st.text_input(label="Passwort", width=300, type="password")
         if st.form_submit_button("Login"):
@@ -17,14 +17,14 @@ def login():
                 user = user_management.check_user(user_name, user_pw)
                 if user:
                     st.session_state.user_name = user["username"]
-                    st.session_state.role = user["rolle"]
+                    st.session_state.rolle = user["rolle"]
                     st.session_state.user_status = True
                     user_management.save_action(user_name=st.session_state.user_name, action_type="login")
             st.rerun()
 
 
 def logout():
-    st.session_state.role = None
+    st.session_state.rolle = None
     st.session_state.user_name = None
     st.session_state.userStatus = False
     st.rerun()
@@ -32,6 +32,7 @@ def logout():
 # Define pages --------------------------------------------------------------
 page_logout = st.Page(logout, title="Log out", icon=":material/logout:")
 page_settings = st.Page("pages/settings.py", icon=":material/security:", title="Settings")
+page_user = st.Page("pages/user_page.py", icon=":material/person:", title="User-Management")
 page_statistiken = st.Page("pages/statistiken_page.py", title="Statistiken", icon=":material/insert_chart:")
 
 page_chat = st.Page(
@@ -61,11 +62,11 @@ st.set_page_config(page_title='', initial_sidebar_state="collapsed", layout="wid
 # st.logo("images/horizontal_blue.png", icon_image="images/icon_blue.png")
 
 page_dict = {}
-if st.session_state.role == "admin": 
+if st.session_state.rolle == "admin": 
     page_dict["Module"] = [page_chat, page_ausgaben, page_newsletter]
-    page_dict["Admin"] = [page_settings, page_statistiken, page_logout]
+    page_dict["Admin"] = [page_settings, page_user, page_statistiken, page_logout]
 
-if st.session_state.role == "user":
+if st.session_state.rolle == "user":
     page_dict["Module"] = [page_chat]
     page_dict["Admin"] = [page_settings, page_statistiken, page_logout]
 

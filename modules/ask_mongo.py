@@ -29,7 +29,7 @@ from modules.ask_mongo_prompts import (
     )
 
 # Init LLM ----------------------------------
-llm = ask_llm.LLMHandler(llm="gpt-4o", local=False)
+llm = ask_llm.LLMHandler(llm="gpt-5", local=False)
 # llm = ask_llm.LLMHandler(llm="llama3", local=True)
 
 # Init MongoDB Client ----------------------------------
@@ -60,7 +60,6 @@ def generate_abstracts(input_field: str, output_field: str, max_iterations: int 
 def write_summary(text: str = "", length: int = 500) -> str:
     if text:
         return llm.ask_llm(
-            temperature=0.1,
             question=WRITE_SUMMARY_TASK,
             system_prompt=WRITE_SUMMARY_SYSTEM_PROMPT.format(length=length),
             db_results_str=text
@@ -71,7 +70,6 @@ def write_summary(text: str = "", length: int = 500) -> str:
 def write_takeaways(text: str = "", max_takeaways: int = 5) -> str:
     if text:
         return llm.ask_llm(
-            temperature=0.1, 
             question=WRITE_TAKEAWAYS_TASK.format(max_takeaways=max_takeaways), 
             system_prompt=WRITE_TAKEAWAYS_SYSTEM_PROMPT, 
             db_results_str=text)
@@ -125,7 +123,6 @@ def generate_keywords(input_field: str, output_field: str, max_iterations: int =
 def create_keywords(text: str = "", max_keywords: int = 5) -> list:
     if text:
         keywords_str = llm.ask_llm(
-            temperature=0.1, 
             question=CREATE_KEYWORDS_TASK.format(max_keywords=max_keywords), 
             system_prompt=CREATE_KEYWORDS_SYSTEM_PROMPT, 
             db_results_str=text
@@ -172,7 +169,6 @@ def generate_entities(input_field: str = "", output_field: str = "", max_iterati
 def create_entities(text: str = "") -> list:
     if not text:
         entities_str = llm.ask_llm(
-            temperature=0.1, 
             question=CREATE_ENTITIES_TASK, 
             system_prompt=CREATE_ENTITIES_SYSTEM_PROMPT, 
             db_results_str=text
@@ -185,7 +181,7 @@ def create_entities(text: str = "") -> list:
 
 # Query & Filter ------------------------------------------------
 def generate_query(question: str = "") -> str:
-    return llm.ask_llm(temperature=0.1, question=GENERATE_QUERY_TASK.format(question=question)) 
+    return llm.ask_llm(question=GENERATE_QUERY_TASK.format(question=question)) 
     
 def generate_filter(filter: list, field: str) -> dict:
     return {field: {"$in": filter}} if filter else {}
