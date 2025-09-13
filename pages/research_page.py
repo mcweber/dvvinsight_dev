@@ -32,13 +32,13 @@ LLM = "gpt-5"
 # ---------------------------------------------------
 
 @st.cache_resource
-def init_llm(llm: str = "gpt-4o", local: bool = False):
-    print("init_llm OK")
+def init_llm(llm: str = LLM, local: bool = False):
+    print(f"init_llm {llm} [OK]")
     return ask_llm.LLMHandler(llm=llm, local=local)
 
 @st.cache_resource
 def init_websearch():
-    print("init_websearch OK")
+    print("init_websearch [OK]")
     return ask_web.WebSearch()
 
 @st.dialog("DokumentenAnsicht")
@@ -285,7 +285,6 @@ def main() -> None:
         
             # LLM Search ------------------------------------------------
             summary = llm.ask_llm(
-                temperature=0.2,
                 question=question,
                 history=[],
                 system_prompt=st.session_state.system_prompt,

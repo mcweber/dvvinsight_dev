@@ -4,6 +4,7 @@
 # ---------------------------------------------------
 # 14.01.2025 added gemini 2.0 flash
 # 13.09.2025 switched to GPT5
+# 13.09.2025 eliminated temperature parameter
 # ---------------------------------------------------
 # Description:
 # llm: gemini, gpt-5, gpt-5-mini, deepseek, llama
@@ -38,7 +39,7 @@ class LLMHandler:
         load_dotenv()
 
         if self.LLM in ["gpt-5", "gpt-5-mini"]:
-            self.openaiClient = openai.OpenAI(api_key=os.environ.get('OPENAI_API_KEY_PRIVAT'))
+            self.openaiClient = openai.OpenAI(api_key=os.environ.get('OPENAI_API_KEY_DVV'))
         elif self.LLM == "llama":
             self.groqClient = Groq(api_key=os.environ.get('GROQ_API_KEY_PRIVAT'))
         elif self.LLM == "gemini":
@@ -95,13 +96,12 @@ class LLMHandler:
 
         return prompt
 
-    def ask_llm(self, temperature: float = 0.2, question: str = "", history: list = [],
+    def ask_llm(self, question: str = "", history: list = [],
                 system_prompt: str = "", db_results_str: str = "", web_results_str: str = "", source_doc_str: str = "") -> str:
         """
         Asks the LLM a question and returns the response.
         
         Args:
-            temperature (float, optional): The temperature for the LLM. Defaults to 0.2.
             question (str, optional): The user's question. Defaults to "".
             history (list, optional): The conversation history. Defaults to [].
             system_prompt (str, optional): The system prompt. Defaults to "".
@@ -116,7 +116,7 @@ class LLMHandler:
         if self.LOCAL:
             return self._handle_local_llm(prompt)
         else:
-            return self._handle_remote_llm(temperature, prompt)
+            return self._handle_remote_llm(prompt)
 
     def _handle_local_llm(self, input_messages: list) -> str:
         """
@@ -137,28 +137,27 @@ class LLMHandler:
         else:
             return f"Error: No valid local LLM specified [{self.LLM}]."
 
-    def _handle_remote_llm(self, temperature: float, input_messages: list) -> str:
+    def _handle_remote_llm(self, input_messages: list) -> str:
         """
         Handles the remote LLM response.
         
         Args:
-            temperature (float): The temperature for the LLM.
             input_messages (list): The input messages for the LLM.
         
         Returns:
             str: The LLM's response.
         """
         if self.LLM in ["gpt-5", "gpt-5-mini"]:
-            response = self.openaiClient.chat.completions.create(model=self.LLM, temperature=temperature, messages=input_messages)
+            response = self.openaiClient.chat.completions.create(model=self.LLM, messages=input_messages)
             return response.choices[0].message.content
         elif self.LLM == "llama":
             response = self.groqClient.chat.completions.create(model="llama-3.3-70b-versatile", messages=input_messages)
             return response.choices[0].message.content
         elif self.LLM == "gemini":
-            response = self.geminiClient.chat.completions.create(model="gemini-2.0-flash", temperature=temperature, messages=input_messages)
+            response = self.geminiClient.chat.completions.create(model="gemini-2.0-flash", messages=input_messages)
             return(response.choices[0].message.content)
         elif self.LLM == "deepseek":
-            response = self.deepseekClient.chat.completions.create(model="deepseek-chat", temperature=temperature, messages=input_messages)
+            response = self.deepseekClient.chat.completions.create(model="deepseek-chat", messages=input_messages)
             return(response.choices[0].message.content)
         else:
             return "Error: No valid remote LLM specified."
