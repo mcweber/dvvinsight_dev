@@ -1,5 +1,5 @@
 import streamlit as st
-import modules.user_management as user_management
+import modules.user_management_sql as user_management
 
 if "role" not in st.session_state:
     st.session_state.role = None 
@@ -8,10 +8,10 @@ if "role" not in st.session_state:
 
 # Define functions -----------------------------------------------------------
 def login():
-    with st.form(key="loginForm"):
+    with st.form(key="loginForm", width=350):
         st.write(f"Status: {st.session_state.role}")
-        user_name = st.text_input("Benutzer")
-        user_pw = st.text_input("Passwort", type="password")
+        user_name = st.text_input(label="Benutzer", width=300)
+        user_pw = st.text_input(label="Passwort", width=300, type="password")
         if st.form_submit_button("Login"):
             if user_name and user_pw:
                 user = user_management.check_user(user_name, user_pw)
@@ -61,8 +61,12 @@ st.set_page_config(page_title='', initial_sidebar_state="collapsed", layout="wid
 # st.logo("images/horizontal_blue.png", icon_image="images/icon_blue.png")
 
 page_dict = {}
-if st.session_state.role in ["admin", "user"]:
+if st.session_state.role == "admin": 
     page_dict["Module"] = [page_chat, page_ausgaben, page_newsletter]
+    page_dict["Admin"] = [page_settings, page_statistiken, page_logout]
+
+if st.session_state.role == "user":
+    page_dict["Module"] = [page_chat]
     page_dict["Admin"] = [page_settings, page_statistiken, page_logout]
 
 if len(page_dict) > 0:

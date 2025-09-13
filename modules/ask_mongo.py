@@ -1,5 +1,5 @@
 # ---------------------------------------------------
-# Version: 11.03.2025
+# Version: 13.09.2025
 # Author: M. Weber
 # ---------------------------------------------------
 # ---------------------------------------------------
@@ -292,28 +292,6 @@ def collect_ausgaben(quelle:str, jahrgang:int, ausgabe:int) -> list:
         ).sort('seite_start', 1)
     return list(cursor)
 
-
-def group_by_field() -> dict:
-    pipeline = [
-            {   
-            '$group': {
-                '_id': '$quelle_id', 
-                'count': {
-                    '$sum': 1
-                    }
-                }
-            }, {
-            '$sort': {
-                'count': -1
-                }
-            }
-            ]
-    result = collection.aggregate(pipeline)
-    # transfor into dict
-    return_dict = {}
-    for item in result:
-        return_dict[item['_id']] = item['count']
-    return return_dict
 
 def list_fields() -> dict:
     result = collection.find_one()

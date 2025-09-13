@@ -1,14 +1,12 @@
 # ---------------------------------------------------
-# Version:14.01.2025
+# Version:13.09.2025
 # Author: M. Weber
 # ---------------------------------------------------
-# 30.08.2024 switched to class-based approach
-# 12.10.2024 added source documents
-# 05.01.2024 added o1, o1-mini, deepseek
 # 14.01.2025 added gemini 2.0 flash
+# 13.09.2025 switched to GPT5
 # ---------------------------------------------------
 # Description:
-# llm: gemini, o1, o1-mini, gpt4o, gpt4omini, deepseek, llama
+# llm: gemini, gpt-5, gpt-5-mini, deepseek, llama
 # local: True/False
 # ---------------------------------------------------
 
@@ -22,7 +20,7 @@ import google.generativeai as gemini
 from groq import Groq
 import ollama
 
-MODELS = ["gemini", "o1", "o1-mini", "gpt-4o", "gpt-4o-mini", "deepseek", "llama"]
+MODELS = ["gemini", "gpt5", "gpt-5-mini", "deepseek", "llama"]
 
 # Define class ---------------------------------------------------
 class LLMHandler:
@@ -39,7 +37,7 @@ class LLMHandler:
         self.LOCAL = local
         load_dotenv()
 
-        if self.LLM in ["o1", "o1-mini", "gpt-4o", "gpt4o-mini"]:
+        if self.LLM in ["gpt-5", "gpt-5-mini"]:
             self.openaiClient = openai.OpenAI(api_key=os.environ.get('OPENAI_API_KEY_PRIVAT'))
         elif self.LLM == "llama":
             self.groqClient = Groq(api_key=os.environ.get('GROQ_API_KEY_PRIVAT'))
@@ -150,7 +148,7 @@ class LLMHandler:
         Returns:
             str: The LLM's response.
         """
-        if self.LLM in ["o1", "o1-mini", "gpt-4o", "gpt4o-mini"]:
+        if self.LLM in ["gpt-5", "gpt-5-mini"]:
             response = self.openaiClient.chat.completions.create(model=self.LLM, temperature=temperature, messages=input_messages)
             return response.choices[0].message.content
         elif self.LLM == "llama":
