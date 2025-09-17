@@ -1,5 +1,5 @@
 # ---------------------------------------------------
-# Version: 13.09.2025
+# Version: 17.09.2025
 # Author: M. Weber
 # ---------------------------------------------------
 # ---------------------------------------------------
@@ -82,14 +82,14 @@ def hash_string(string: str) -> str:
     return hashlib.sha256(string.encode('utf-8')).hexdigest()
 
 
-def add_user_hash(user_name: str, user_pw: str) -> bool:
+def add_user_hash(name: str, pw: str) -> bool:
     try:
         with get_connection() as conn:
             conn.execute(
                 '''
                 INSERT INTO users (username, user_password)
                 VALUES (?, ?)
-                ''', (user_name, hash_string(user_pw))
+                ''', (name, hash_string(pw))
             )
             conn.commit()
         return True
@@ -97,26 +97,26 @@ def add_user_hash(user_name: str, user_pw: str) -> bool:
         return False
 
 
-def check_user_hash(user_name: str, user_pw: str):
+def check_user_hash(name: str, pw: str):
     with get_connection() as conn:
         cur = conn.execute(
             '''
             SELECT * FROM users
             WHERE username = ? AND user_password = ?
-            ''', (user_name, hash_string(user_pw))
+            ''', (name, hash_string(pw))
         )
         user = cur.fetchone()
         return user if user else ""
 
 
-def update_user_hash(user_name: str, new_user_pw: str) -> bool:
+def update_user_hash(name: str, new_pw: str) -> bool:
     with get_connection() as conn:
         conn.execute(
             '''
             UPDATE users
             SET user_password = ?
             WHERE username = ?
-            ''', (hash_string(new_user_pw), user_name)
+            ''', (hash_string(new_pw), name)
         )
         conn.commit()
         return True
@@ -124,14 +124,14 @@ def update_user_hash(user_name: str, new_user_pw: str) -> bool:
 
 # User Functions -----------------------------------------
 
-def add_user(user_name: str, user_pw: str) -> bool:
+def add_user(name: str, pw: str, rolle:str) -> bool:
     try:
         with get_connection() as conn:
             conn.execute(
                 '''
-                INSERT INTO users (username, user_password)
-                VALUES (?, ?)
-                ''', (user_name, user_pw)
+                INSERT INTO users (username, user_password, rolle)
+                VALUES (?, ?, ?)
+                ''', (name, pw, rolle)
             )
             conn.commit()
         return True
@@ -139,28 +139,48 @@ def add_user(user_name: str, user_pw: str) -> bool:
         return False
 
 
-def check_user(user_name: str, user_pw: str):
+def update_user(name: str, pw: str, rolle:str) -> bool:
+    try:
+        with get_connection() as conn:
+            conn.execute(
+                '''
+                UPDATE users
+                SET user_password = ?,
+                    rolle = ?
+                WHERE username = ?
+                ''', (pw, rolle, name)
+            )
+            conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+
+
+def delete_user(name: str) -> bool:
+    try:
+        with get_connection() as conn:
+            conn.execute(
+                '''
+                DELETE FROM users
+                WHERE username = ?
+                ''', (name,)
+            )
+            conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+
+
+def check_user(name: str, pw: str) -> list:
     with get_connection() as conn:
         cur = conn.execute(
             '''
             SELECT * FROM users
             WHERE username = ? AND user_password = ?
-            ''', (user_name, user_pw)
+            ''', (name, pw)
         )
         user = cur.fetchone()
-        return user if user else ""
-
-
-def delete_user(user_name: str) -> bool:
-    with get_connection() as conn:
-        conn.execute(
-            '''
-            DELETE FROM users
-            WHERE username = ?
-            ''', (user_name,)
-        )
-        conn.commit()
-        return True
+        return user if user else []
 
 
 def list_users() -> list:
@@ -172,13 +192,13 @@ def list_users() -> list:
 
 # Tracking Functions -----------------------------------------
 
-def save_action(user_name: str, action_type: str = "", action: str = "") -> bool:
+def save_action(name: str, action_type: str = "", action: str = "") -> bool:
     with get_connection() as conn:
         conn.execute(
             '''
             INSERT INTO tracking (username, action_type, action)
             VALUES (?, ?, ?)
-            ''', (user_name, action_type, action)
+            ''', (name, action_type, action)
         )
         conn.commit()
         return True

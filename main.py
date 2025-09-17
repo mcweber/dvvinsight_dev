@@ -15,7 +15,7 @@ def login():
         if st.form_submit_button("Login"):
             if user_name and user_pw:
                 user = user_management.check_user(user_name, user_pw)
-                if user:
+                if user != []:
                     st.session_state.user_name = user["username"]
                     st.session_state.rolle = user["rolle"]
                     st.session_state.user_status = True
